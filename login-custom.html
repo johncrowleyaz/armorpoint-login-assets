@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Sign in · ArmorPoint Partner Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="https://www.armorpoint.com/apple-touch-icon.png">
+  <style>
+    :root{
+      --navy:#0a1320; --navy-2:#0c1a29; --navy-3:#08111c;
+      --blue:#0099DC; --cyan:#3bb4ea;
+      --ink:#eef5fb; --muted:#93a8bd; --dim:#63788d;
+      --line:rgba(150,180,210,.14);
+      --surface:#f6f8fb; --surface-ink:#0e1a26;
+      --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+      --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{font-family:var(--sans);background:var(--navy);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+    a{color:inherit;text-decoration:none}
+
+    .split{display:flex;min-height:100vh}
+    /* thin brand accent across the very top */
+    .split::before{content:"";position:fixed;top:0;left:0;right:0;height:3px;z-index:50;
+      background:linear-gradient(90deg,var(--blue),var(--cyan) 60%,transparent)}
+
+    /* ---------------- LEFT : login ---------------- */
+    .left{flex:0 0 42%;max-width:620px;min-width:380px;background:var(--surface);color:var(--surface-ink);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:40px 40px 28px;position:relative}
+    .left .wordmark{position:absolute;top:30px;left:40px;display:flex;align-items:center}
+    .left .wordmark img{height:23px;width:auto;display:block}
+    .left-inner{width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center}
+    .left h1{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;color:#101f2c;text-align:center}
+    .left .lede{font-size:.9rem;color:#5c6b78;margin-top:7px;margin-bottom:14px;text-align:center}
+    #lock-container{width:100%;min-height:300px}
+    .left-foot{position:absolute;bottom:22px;left:0;right:0;text-align:center;
+      font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;color:#9aa8b4;text-transform:uppercase}
+    .left-foot span{color:var(--blue)}
+
+    /* de-chrome Lock so it blends into the panel */
+    #lock-container .auth0-lock.auth0-lock .auth0-lock-widget{box-shadow:none!important;background:transparent!important}
+    #lock-container .auth0-lock.auth0-lock .auth0-lock-header{background:transparent!important;height:auto!important}
+    #lock-container .auth0-lock.auth0-lock .auth0-lock-header-bg{display:none!important}
+    #lock-container .auth0-lock.auth0-lock .auth0-lock-header-logo{height:44px!important;margin:4px 0 10px!important}
+    #lock-container .auth0-lock.auth0-lock .auth0-lock-name{color:#101f2c!important}
+    #lock-container .auth0-lock.auth0-lock .auth0-lock-cred-pane{border-radius:12px!important}
+
+    /* ---------------- RIGHT : webinar panel ---------------- */
+    .right{flex:1 1 58%;position:relative;overflow:hidden;
+      background:
+        radial-gradient(80% 90% at 88% 8%, rgba(0,153,220,.22), transparent 55%),
+        radial-gradient(70% 80% at 110% 100%, rgba(59,180,234,.10), transparent 60%),
+        linear-gradient(160deg,var(--navy-2) 0%, var(--navy) 55%, var(--navy-3) 100%);
+      display:flex;flex-direction:column;justify-content:center;
+      padding:clamp(36px,4.4vw,72px);max-height:100vh;overflow-y:auto}
+    .right::before{content:"";position:absolute;inset:0;pointer-events:none;
+      background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+      background-size:44px 44px;
+      -webkit-mask-image:radial-gradient(82% 78% at 72% 30%,#000 25%,transparent 76%);
+      mask-image:radial-gradient(82% 78% at 72% 30%,#000 25%,transparent 76%);opacity:.5}
+
+    /* sonar / signal motif top-right */
+    .sonar{position:absolute;top:-90px;right:-90px;width:520px;height:520px;pointer-events:none;opacity:.8}
+    .sonar span{position:absolute;inset:0;margin:auto;border-radius:50%;border:1px solid rgba(90,165,215,.16)}
+    .sonar span:nth-child(1){width:520px;height:520px}
+    .sonar span:nth-child(2){width:380px;height:380px;border-color:rgba(90,165,215,.2)}
+    .sonar span:nth-child(3){width:250px;height:250px;border-color:rgba(0,153,220,.3)}
+    .sonar span:nth-child(4){width:130px;height:130px;border-color:rgba(59,180,234,.42)}
+    .sonar .sweep{position:absolute;inset:0;margin:auto;width:520px;height:520px;border-radius:50%;
+      background:conic-gradient(from 0deg, rgba(59,180,234,.28), transparent 32%);
+      -webkit-mask:radial-gradient(circle,transparent 0,#000 1px);mask:radial-gradient(circle,transparent 0,#000 1px);
+      animation:spin 8s linear infinite}
+    .sonar .blip{width:9px;height:9px;background:var(--cyan);border:0;box-shadow:0 0 16px 5px rgba(59,180,234,.55)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media (prefers-reduced-motion:reduce){.sonar .sweep{animation:none}}
+
+    .panel{position:relative;max-width:600px;width:100%}
+    .logo-lockup{display:flex;align-items:center;margin-bottom:34px}
+    .logo-lockup img{height:30px;width:auto;display:block;filter:drop-shadow(0 2px 12px rgba(0,153,220,.4))}
+
+    .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;
+      color:var(--cyan);display:flex;align-items:center;gap:11px;margin-bottom:18px}
+    .eyebrow::before{content:"";width:24px;height:1px;background:var(--cyan);opacity:.85}
+    .panel h2{font-size:clamp(1.9rem,3vw,2.7rem);line-height:1.07;font-weight:800;letter-spacing:-.025em;text-wrap:balance;color:#fff}
+    .panel h2 em{font-style:normal;color:var(--cyan)}
+    .panel .sub{color:var(--muted);font-size:clamp(.98rem,1.05vw,1.07rem);line-height:1.6;max-width:48ch;margin-top:16px}
+
+    .choose{font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);
+      margin:32px 0 14px;display:flex;align-items:center;gap:12px}
+    .choose::after{content:"";flex:1;height:1px;background:var(--line)}
+
+    .sessions{display:flex;flex-direction:column;gap:11px}
+    .ses{display:flex;align-items:center;gap:18px;padding:15px 18px;border:1px solid var(--line);border-radius:13px;
+      background:rgba(120,175,215,.045);transition:border-color .2s,background .2s,transform .2s}
+    .ses:hover{border-color:rgba(59,180,234,.45);background:rgba(59,180,234,.08);transform:translateX(3px)}
+    .ses .when{flex:0 0 auto;min-width:118px}
+    .ses .day{font-family:var(--mono);font-size:.9rem;font-weight:600;color:#fff;letter-spacing:.02em}
+    .ses .time{font-family:var(--mono);font-size:.68rem;color:var(--dim);margin-top:3px;letter-spacing:.04em}
+    .ses .who{flex:1 1 auto;min-width:0}
+    .ses .role{font-size:1rem;font-weight:700;color:var(--ink)}
+    .ses .desc{font-size:.82rem;color:var(--muted);margin-top:2px;line-height:1.4}
+    .ses .go{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:600;
+      color:var(--cyan);white-space:nowrap}
+    .ses .go .arw{transition:transform .2s}
+    .ses:hover .go .arw{transform:translateX(4px)}
+
+    .foot{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);
+      display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .foot .msg{font-size:.9rem;color:var(--muted)}
+    .foot .all{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;color:var(--cyan);
+      display:inline-flex;align-items:center;gap:7px}
+
+    /* ---------------- responsive ---------------- */
+    @media (max-width:940px){
+      .split{flex-direction:column}
+      .left{flex:0 0 auto;max-width:none;min-width:0;width:100%;padding:64px 24px 48px}
+      .right{max-height:none;padding:48px 24px 56px}
+      .sonar{opacity:.4}
+    }
+    @media (max-width:520px){
+      .ses{flex-wrap:wrap;gap:10px}
+      .ses .who{flex-basis:100%;order:3}
+      .foot{flex-direction:column;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <div class="split">
+
+    <!-- LEFT : login -->
+    <section class="left">
+      <a class="wordmark" href="https://www.armorpoint.com" target="_blank" rel="noopener">
+        <img src="https://raw.githubusercontent.com/johncrowleyaz/armorpoint-login-assets/main/logo-fullcolor.svg" alt="ArmorPoint">
+      </a>
+      <div class="left-inner">
+        <div id="lock-container"></div>
+      </div>
+      <div class="left-foot">Secured by <span>ArmorPoint</span> &middot; AP Partner Portal</div>
+    </section>
+
+    <!-- RIGHT : webinar panel -->
+    <aside class="right">
+      <div class="sonar">
+        <span></span><span></span><span></span><span></span>
+        <span class="sweep"></span><span class="blip"></span>
+      </div>
+      <div class="panel">
+        <div class="logo-lockup">
+          <img src="https://raw.githubusercontent.com/johncrowleyaz/armorpoint-login-assets/main/logo-inverse.svg" alt="ArmorPoint">
+        </div>
+
+        <div class="eyebrow">Platform Launch &middot; July 2026</div>
+        <h2>Introducing the <em>new</em> ArmorPoint.</h2>
+        <p class="sub">Security operations, risk management, and strategic guidance in one platform. Join a role-based launch webinar and see what's new before everyone else.</p>
+
+        <div class="choose">Choose your session</div>
+        <div class="sessions">
+
+          <a class="ses" href="https://armorpoint.wistia.com/live/events/in7ujuqps7" target="_blank" rel="noopener">
+            <div class="when"><div class="day">Jul 20</div><div class="time">2:00 PM ET</div></div>
+            <div class="who"><div class="role">For MSPs &amp; MSSPs</div><div class="desc">Partners delivering security to their clients &middot; multi-tenant visibility</div></div>
+            <span class="go">Register <span class="arw">&rarr;</span></span>
+          </a>
+
+          <a class="ses" href="https://armorpoint.wistia.com/live/events/rurwo1bf7s" target="_blank" rel="noopener">
+            <div class="when"><div class="day">Jul 21</div><div class="time">1:00 PM ET</div></div>
+            <div class="who"><div class="role">For SOC Analysts</div><div class="desc">Analysts working alerts every day &middot; AI-assisted triage &amp; response</div></div>
+            <span class="go">Register <span class="arw">&rarr;</span></span>
+          </a>
+
+          <a class="ses" href="https://armorpoint.wistia.com/live/events/doazz3wnbi" target="_blank" rel="noopener">
+            <div class="when"><div class="day">Jul 22</div><div class="time">2:00 PM ET</div></div>
+            <div class="who"><div class="role">For Compliance Officers</div><div class="desc">GRC leaders managing frameworks &amp; audits &middot; Governance Hub</div></div>
+            <span class="go">Register <span class="arw">&rarr;</span></span>
+          </a>
+
+        </div>
+
+        <div class="foot">
+          <span class="msg">The platform is changing. See it before everyone else does.</span>
+          <a class="all" href="https://www.armorpoint.com/armorpoint-platform-launch-webinars" target="_blank" rel="noopener">All sessions &rarr;</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="https://cdn.auth0.com/js/lock/14.2.3/lock.min.js"></script>
+  <script>
+    // Decode utf8 characters properly - preserve Auth0's config injection
+    var config = JSON.parse(decodeURIComponent(escape(window.atob('@@config@@'))));
+    config.extraParams = config.extraParams || {};
+    var connection = config.connection;
+    var prompt = config.prompt;
+    var languageDictionary;
+    var language;
+    if (config.dict && config.dict.signin && config.dict.signin.title) {
+      languageDictionary = { title: config.dict.signin.title };
+    } else if (typeof config.dict === 'string') {
+      language = config.dict;
+    }
+    languageDictionary = languageDictionary || {};
+    if (!languageDictionary.title) { languageDictionary.title = 'AP Partner Portal'; }
+    var loginHint = config.extraParams.login_hint;
+
+    var lock = new Auth0Lock(config.clientID, config.auth0Domain, {
+      auth: {
+        redirectUrl: config.callbackURL,
+        responseType: (config.internalOptions || {}).response_type ||
+          (config.callbackOnLocationHash ? 'token' : 'code'),
+        params: config.internalOptions
+      },
+      configurationBaseUrl: config.clientConfigurationBaseUrl,
+      overrides: {
+        __tenant: config.auth0Tenant,
+        __token_issuer: config.authorizationServer.issuer
+      },
+      assetsUrl: config.assetsUrl,
+      allowedConnections: connection ? [connection] : null,
+      rememberLastLogin: !prompt,
+      language: language,
+      languageDictionary: languageDictionary,
+      theme: {
+        logo: 'https://www.armorpoint.com/apple-touch-icon.png',
+        primaryColor: '#0099DC'
+      },
+      prefill: loginHint ? { email: loginHint, username: loginHint } : null,
+      container: 'lock-container',
+      closable: false,
+      defaultADUsernameFromEmailPrefix: false
+    });
+
+    lock.show();
+  </script>
+</body>
+</html>
